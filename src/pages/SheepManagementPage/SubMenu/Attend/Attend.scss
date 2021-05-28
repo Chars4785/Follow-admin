@@ -1,0 +1,26 @@
+.attend_body{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: 50px;
+    .ant-table-wrapper{
+        width: 100%;
+    }
+    .search_wrapper{
+        width: 100%;
+        clear: both;
+        display: inline-block;
+        width: -webkit-fill-available;
+        justify-content: flex-start;
+        font-size: 12px;
+        padding: 5px 10px 5px 5px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        border: 1px solid #ccc !important;
+        margin-bottom: 10px;
+    }
+    .serach_table{
+        height: 100%;
+    }
+}

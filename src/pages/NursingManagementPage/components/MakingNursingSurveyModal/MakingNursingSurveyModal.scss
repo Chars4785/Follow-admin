@@ -1,0 +1,16 @@
+
+.nursing-modal{
+    width: 600px !important;
+    .nursingModalWrapper{
+        display: flex;
+        flex-direction: row;
+        width: fit-content;
+        .ant-descriptions{
+            width: fit-content;
+        }
+        .ant-descriptions-item-content{
+            white-space: normal;
+        }
+    }
+
+}

@@ -1,0 +1,28 @@
+@import '../../../../../../assets/styles/alignment.scss';
+
+.search_wrapper{
+    // width: 100%;
+    clear: both;
+    display: inline-block;
+    width: -webkit-fill-available;
+    justify-content: flex-start;
+    font-size: 12px;
+    padding: 5px 10px 5px 5px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #ccc !important;
+    margin-bottom: 10px;
+    .tableTitle{
+        
+    }
+    .serach_table{
+        height: 100%;
+    }
+    .ant-form-item-control-input-content{
+        @extend .div_center;
+
+        .ant-descriptions{
+            width: 100%;
+        }
+    }
+}

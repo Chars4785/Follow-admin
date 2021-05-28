@@ -1,0 +1,12 @@
+@import '../../../../assets/styles/color.scss';
+
+.Calendar_card{
+   display: flex;
+   background-color: #ffffff;
+   width: 50%;
+   height: 100%;
+   border-radius: 20px;
+   box-shadow: 0 1px 6px 0 rgba(32, 33, 36, .28);
+   padding:20px;
+   margin: 10px;
+}

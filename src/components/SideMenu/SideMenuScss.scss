@@ -1,0 +1,57 @@
+@import '../../assets/styles/color.scss';
+.app_body{
+    height: 100%;
+    border-color: red;
+    border-width: 2px;
+    // 메인 스타일
+    & > .ant-layout {
+        // 컨텐츠 내용
+        & > .ant-layout-content {
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+    }
+    .ant-layout-sider { 
+        background: #ffffff;
+        border-right: 1px solid #eee;
+    }
+    .site-layout-background{
+        // display: flex;
+        // flex-direction: row !important;
+
+        width: 100%;
+        height: 100%;
+        // border-right-color: $mainColor;
+        // border-right: 10px;
+        // background-color: red;
+        .sider_logo_wrapper{
+            // width: 200px;
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-content: center;
+            img {
+                height: 100px;
+                width: 100px;
+                justify-content: center;
+                align-content: center;
+                background-color:#fff;
+            }
+        }
+        .sider-left-memus {
+            position: relative;
+
+            .ant-menu-root {
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+        }
+    }
+
+    .sider_children{
+        display: flex;
+        width: 100%;
+        height: 100%;
+    }
+}
+
