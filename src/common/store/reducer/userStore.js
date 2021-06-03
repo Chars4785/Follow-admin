@@ -6,7 +6,6 @@ import { createSlice } from '@reduxjs/toolkit'
 const APP_TOKEN = 'APP_TOKEN'
 const INIT_STORE = {
   user: undefined,
-  openKey :[],
   error:undefined,
 };
 

@@ -11,9 +11,6 @@ const { Content, Sider } = Layout;
 class SideMenu extends React.Component{
     constructor( props ){
         super(props)
-        this.state ={
-            openKey: []
-        }
     }
     
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -31,6 +28,7 @@ class SideMenu extends React.Component{
     }
 
     onOpenChange = (openKeyValue) =>{
+        if( _.isEmpty(openKeyValue) ) return
         const { openKey, changeOpenkey } = this.props;
         const newOpenKey =_.difference(openKeyValue, openKey);
         changeOpenkey(newOpenKey);
@@ -89,7 +87,6 @@ class SideMenu extends React.Component{
         const selctedKeys = history.location.pathname.split('/');
         const selectMenuKey = _.last(selctedKeys);
         return(
-            // <div className="app_body">
                 <Layout className="app_body">
                     <Sider className="site-layout-background">
                         <div className="sider_logo_wrapper">
@@ -119,7 +116,6 @@ class SideMenu extends React.Component{
                         </Content>
                     </div>
                 </Layout>
-            // </div>
         )
     }
 }
