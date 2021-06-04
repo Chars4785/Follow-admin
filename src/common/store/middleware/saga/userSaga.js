@@ -1,4 +1,4 @@
-import { takeEvery, call, put } from "redux-saga/effects";
+import { takeEvery, call, put, take, fork } from "redux-saga/effects";
 import NetworkConfig from '../../../../config/NetworkConfig';
 import request, { requestNoAuth } from '../../../api/request';
 import { userAction } from '../../reducer/userStore';
@@ -36,7 +36,7 @@ function* signIn({payload}){
         })
         window.localStorage.setItem('APP_TOKEN',JSON.stringify(data));
         GlobalDataManager.setAuthInfo(data)
-        yield call(getUserInfo)
+        yield fork(getUserInfo)
     }catch(e){
         yield put(catchError(e))
     }
