@@ -75,4 +75,17 @@ export const MAIN_MENU ={
     }
 }
 
+export const STATUS ={
+    // 교육/훈련 간사
+    EDU_GANSA: 'EDU_GANSA',
+    // 라인업/새가족 간사
+    NEWFAMILY_GANSA: 'NEWFAMILY_GANSA',
+    // 예배/ 선교 간사
+    WORSHIP_GANSA: 'WORSHIP_GANSA',
+    // 양육/재정 간사
+    NURTURE_GANSA: 'NURTURE_GANSA',
+    // 행정 간사
+    ADMIN_GANSA: 'ADMIN_GANSA'
+}
+
 export const LOGO_URL = '@assets/images'

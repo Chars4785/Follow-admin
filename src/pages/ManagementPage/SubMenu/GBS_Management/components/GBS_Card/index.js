@@ -1,9 +1,11 @@
-import React,{ useState, useCallback } from 'react';
+import React,{ useState, useCallback, useEffect } from 'react';
 import _ from 'lodash';
 import { Table, Descriptions, Form, Select, Input, TreeSelect, Button, message} from 'antd'
 import GBS_EditorModal from '../GBS_EditorModal';
 import './GBS_Card.scss';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import dispatch from '../../../../../../common/utils/dispatch'
+import { STATUS } from '../../../../../../common/store/Variable'
 
 const { Group } = Input;
 const { Option } = Select;
@@ -70,6 +72,10 @@ function GBS_EditorMdoal({
 }){
     const [gbs_editorModalVisible,setGBSeditorModalVisible] = useState(false);
     const [openGBSTable, setOpenGBSTable] = useState(false);
+    const [codi,setCodi] = useState({});
+    const [member,setmember] = useState({});
+    const [gansa,setgansa] = useState({});
+    const [count,setCount] = useState(0);
 
     const onClickEditor = (value) =>{
         setGBSeditorModalVisible(value);
@@ -79,24 +85,65 @@ function GBS_EditorMdoal({
     },[openGBSTable])
 
     const onFinish = (value) =>{
+
     }
 
     const renderTableTitle = () =>{
         return(
             <h2 className="tableTitle">
-                남은 조원
+                조원 리스트
             </h2>
         )
     }
 
+    const checkValue = ()  =>{
+        console.log(member)
+        console.log(gansa)
+        console.log(codi)
+    }
 
-    const renderSelect = ( mode ="multiple") =>{
+    const onPressSaveButton = () =>{
+        const addMember = {
+            key: String(count),
+            name: '',
+            status: '',
+            gbs_member: []
+        }
+        member[String(count)] = addMember
+        setmember(member)
+        setCount(count + 1);
+    }
+
+    const onChangeMemberSelect = (value,key) =>{
+        member[key] ={
+            ...member[key],
+            gbs_member: value
+        }
+        setmember(member)
+    }
+
+    const onChangeCodiSelect = (value,data) =>{
+        const { key } = data
+        member[key] = {
+            ...member[key],
+            name: value
+        }
+        setmember(member)
+    }
+
+    const onChangeGansaSelect = (value,key) =>{
+        gansa[key] = value
+        setgansa(gansa)
+    }
+
+    const renderSelectGansa = (key) =>{
         return(
-            <Select 
-                mode={mode}
+            <Select
+                mode={"default"}
                 showSearch
                 size="middle"
                 style={{ width:'100%' }}
+                onChange={(value) =>onChangeGansaSelect(value,key)}
             >
                 <Option value="이종민1">이종민1</Option>
                 <Option value="이종민2">이종민2</Option>
@@ -105,36 +152,111 @@ function GBS_EditorMdoal({
             </Select>
         )
     }
+
+    const renderDescriptionTitle = () =>{
+        return (
+            <div className={'titleWrapper'}>
+                <span>
+                    2020.09.01~2021.03.01
+                    <Button 
+                        className={'saveButton'}
+                        type="primary"
+                        onClick={() =>onClickEditor(true)}
+                    >
+                        날짜 변경
+                    </Button>
+                    <Button 
+                        className={'saveButton'}
+                        type="primary"
+                        onClick={() =>onClickEditor(true)}
+                    >
+                        저장
+                    </Button>
+                    <Button 
+                        className={'saveButton'}
+                        type="primary"
+                        danger
+                    >
+                        적용중
+                    </Button>
+                </span>    
+                    <Button 
+                        className={'saveButton'}    
+                        type="default"
+                        onClick={onClickOpenGBSTable}
+                    >
+                        펼치기
+                    </Button>
+            </div>
+        )
+    }
+
+    const onPressDelete = () =>{
+
+    }
+
+    const rendermember = (data) =>{
+        const { key } = data
+        return(
+            <Form.Item>
+                <Descriptions bordered>
+                    <Descriptions.Item label="리더">
+                        <Select
+                            mode={'multiple'}
+                            showSearch
+                            size="middle"
+                            style={{ width:'100%' }}
+                            onChange={(v) => onChangeMemberSelect(v,key)}
+                        >
+                            <Option value="이종민1">이종민1</Option>
+                            <Option value="이종민2">이종민2</Option>
+                            <Option value="이종민3">이종민3</Option>
+                            <Option value="이종민4">이종민4</Option>
+                        </Select>
+                    </Descriptions.Item>
+                </Descriptions>
+            </Form.Item>
+        )
+    }
+
+    const renderCodi = () =>{
+        return(_.map(member, (data,index) =>{
+            return (
+                <Form.Item key={`${index}`}>
+                    <Descriptions bordered>
+                        <Descriptions.Item label="코디">
+                            <Select 
+                                showSearch
+                                size="middle"
+                                style={{ width:'100%' }}
+                                onChange={(value) => onChangeCodiSelect(value,data)}
+                            >
+                                <Option value="이종민1">이종민1</Option>
+                                <Option value="이종민2">이종민2</Option>
+                                <Option value="이종민3">이종민3</Option>
+                                <Option value="이종민4">이종민4</Option>
+                            </Select>
+                            {rendermember(data)}
+                            <Button
+                                type={'dashed'}
+                                onClick={onPressDelete(data)}
+                            />      
+                        </Descriptions.Item>
+                    </Descriptions>
+                </Form.Item>
+            )
+        }))
+    }
+
+    useEffect(() => {
+        return () => {
+        }
+    }, [])
     
     return(
         <div className='search_wrapper'>
                 <Descriptions 
-                    title={
-                        <div>
-                            <span>
-                                2020.09.01~2021.03.01
-                            </span>    
-                            <span>
-                                <Button 
-                                    type="primary"
-                                    onClick={() =>onClickEditor(true)}
-                                >
-                                    편집
-                                </Button>
-                            </span>
-                            <span>
-                                <Button type="primary" danger>
-                                    적용중
-                                </Button>
-                            </span>
-                            <span>
-                                <Button type="default"
-                                    onClick={onClickOpenGBSTable}>
-                                    펼치기
-                                </Button>
-                            </span>
-                        </div>
-                    }
+                    title={renderDescriptionTitle()}
                     size="small"
                     bordered
                 >
@@ -151,102 +273,45 @@ function GBS_EditorMdoal({
                     </Descriptions.Item>
                 </Descriptions>
                 {openGBSTable &&
-                <div>
-                    <Table 
-                        title={()=>renderTableTitle()}
-                        columns={columns}
-                        dataSource={data}
-                    />
-                    <Descriptions
-                        bordered
-                    >
-                        <Descriptions.Item label="양육 간사">
-                            {renderSelect("default")}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="양육 간사2">
-                            {renderSelect("default")}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="양육 간사3">
-                            {renderSelect("default")}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="양육 간사4">
-                            {renderSelect("default")}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="양육 간사6">
-                            {renderSelect("default")}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="양육 간사7">
-                            {renderSelect("default")}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="양육 간사8">
-                            {renderSelect("default")}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="양육 간사9">
-                            {renderSelect("default")}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="" />
-                    </Descriptions>
-                    <Form
-                        onFinish={onFinish}
-                    >
-                        <Form.List name="names">
-                            {(fields, { add, remove }, ) => (
-                            <>
-                                {fields.map((field, index) => (
-                                    <Form.Item
-                                    {...field}
-                                    validateTrigger={['onChange', 'onBlur']}
-                                    rules={[
-                                        {
-                                        required: true,
-                                        whitespace: true,
-                                        message: "Please input passenger's name or delete this field.",
-                                        },
-                                    ]}
-                                    >
-                                        <Descriptions
-                                            bordered
-                                        >
-                                            <Descriptions.Item label="코디">
-                                                {renderSelect("default")}
-                                            </Descriptions.Item>
-                                            <Descriptions.Item label="조원">
-                                                {renderSelect()}
-                                            </Descriptions.Item>
-                                            <Descriptions.Item>
-                                                <MinusCircleOutlined
-                                                className="dynamic-delete-button"
-                                                    onClick={() => remove(field.name)}
-                                                />
-                                            </Descriptions.Item>
-                                        </Descriptions>
-                                    </Form.Item>
-                                ))}
-                                <Form.Item>
-                                    <Button
-                                        type="dashed"
-                                        onClick={() => add()}
-                                        style={{ width: '60%' }}
-                                        icon={<PlusOutlined />}
-                                    >
-                                        코디 추가
-                                    </Button>
-                                </Form.Item>
-                            </>
-                            )}
-                        </Form.List>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                                저장
-                            </Button>
-                        </Form.Item>
-                    </Form>
-                </div>}
-                {gbs_editorModalVisible &&
-                    <GBS_EditorModal
-                        isVisible={gbs_editorModalVisible}
-                        onClickEditor={onClickEditor}
-                />}
+                    <div>
+                        <Table 
+                            title={() =>renderTableTitle()}
+                            columns={columns}
+                            dataSource={data}
+                        />
+                        <Descriptions bordered>
+                            <Descriptions.Item label="교육/훈련 간사">
+                                {renderSelectGansa(STATUS.EDU_GANSA)}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="라인업/새가족간사 간사2">
+                                {renderSelectGansa(STATUS.NEWFAMILY_GANSA)}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="예배/선교간사 간사3">
+                                {renderSelectGansa(STATUS.WORSHIP_GANSA)}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="양육/재정간사 간사4">
+                                {renderSelectGansa(STATUS.NURTURE_GANSA)}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="행정 간사6">
+                                {renderSelectGansa(STATUS.ADMIN_GANSA)}
+                            </Descriptions.Item>
+                        </Descriptions>
+                        <Form onFinish={onFinish}>
+                            {renderCodi()}
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit" onClick={onPressSaveButton}>
+                                    추가
+                                </Button>
+                                <Button type="primary" htmlType="submit" onClick={checkValue}>
+                                    추가
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                    </div>}
+                <GBS_EditorModal
+                    isVisible={gbs_editorModalVisible}
+                    onClickEditor={onClickEditor}
+                />
             </div>
             
     )
