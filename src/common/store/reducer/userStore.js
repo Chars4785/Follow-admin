@@ -36,6 +36,7 @@ const userStore = createSlice({
 })
 
 // reducer action && saga action
+// action 및 reducer 등록
 export const userAction = {
   ...userStore.actions,
   createAccountAction: makeCreateAction('createAccountAction'),

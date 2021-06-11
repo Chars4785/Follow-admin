@@ -12,17 +12,25 @@
     border-radius: 10px;
     border: 1px solid #ccc !important;
     margin-bottom: 10px;
-    .tableTitle{
-        
+    .titleWrapper{
+        display: flex;
+        justify-content: space-between;
+        .saveButton{
+            margin: 5px;
+        }
+    }
+    .ant-form-item {
+        margin-bottom: 0;
     }
     .serach_table{
         height: 100%;
     }
-    .ant-form-item-control-input-content{
-        @extend .div_center;
-
-        .ant-descriptions{
-            width: 100%;
+    .add_button{
+        .ant-form-item-control-input-content{
+            @extend .div_center
         }
+    }
+    .select_custom{
+        flex: auto
     }
 }
