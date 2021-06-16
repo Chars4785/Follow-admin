@@ -27,10 +27,18 @@
     }
     .add_button{
         .ant-form-item-control-input-content{
-            @extend .div_center
+            @extend .div_center;
+            margin-top: 10px;
         }
     }
     .select_custom{
         flex: auto
+    }
+    .codi_div{
+        .ant-form-item{
+            margin-top: 10px;
+            border: 1px solid rgb(245, 245, 248) !important;
+            border-radius: 10px;
+        }
     }
 }

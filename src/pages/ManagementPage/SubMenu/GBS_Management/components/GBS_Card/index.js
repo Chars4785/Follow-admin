@@ -1,11 +1,12 @@
-import React,{ useState, useCallback, useEffect } from 'react';
+import React,{ useState, useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash';
 import { Table, Descriptions, Form, Select, Input, TreeSelect, Button, message} from 'antd'
 import GBS_EditorModal from '../GBS_EditorModal';
 import './GBS_Card.scss';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
-import dispatch from '../../../../../../common/utils/dispatch'
 import { STATUS } from '../../../../../../common/store/Variable'
+import { groupAction } from '../../../../../../common/store/reducer/groupStore';
+import { useDispatch, useSelector } from 'react-redux';
 
 const { Group } = Input;
 const { Option } = Select;
@@ -37,7 +38,7 @@ const columns = [
     },
   ];
 
-  const data = [
+  const dumpData = [
     {
       key: '1',
       name: 'John Brown',
@@ -77,9 +78,17 @@ function GBS_EditorMdoal({
     const [gansa,setgansa] = useState({});
     const [count,setCount] = useState(0);
 
-    const onClickEditor = (value) =>{
-        setGBSeditorModalVisible(value);
+    const [leader,setLeader] = useState([])
+
+    const dispatch = useDispatch()
+    const { error, data } = useSelector( state => state.groupStore )
+
+    const onClickEditor = async(value) =>{
+        dispatch(groupAction.saveSeasonAction({
+            groupInfo:member
+        }))
     }
+
     const onClickOpenGBSTable = useCallback(() =>{
         setOpenGBSTable(!openGBSTable)
     },[openGBSTable])
@@ -98,8 +107,7 @@ function GBS_EditorMdoal({
 
     const checkValue = ()  =>{
         console.log(member)
-        console.log(gansa)
-        console.log(codi)
+        console.log(leader)
     }
 
     const onPressSaveButton = () =>{
@@ -107,28 +115,39 @@ function GBS_EditorMdoal({
             key: String(count),
             name: '',
             status: '',
-            gbs_member: []
+            in_member: []
         }
         member[String(count)] = addMember
         setmember(member)
         setCount(count + 1);
     }
 
-    const onChangeMemberSelect = (value,key) =>{
+    const onChangeMemberSelect = (value,key,status) =>{
         member[key] ={
             ...member[key],
-            gbs_member: value
+            in_member: value
         }
-        setmember(member)
+        setmember({...member})
     }
 
     const onChangeCodiSelect = (value,data) =>{
         const { key } = data
         member[key] = {
             ...member[key],
-            name: value
+            name: value,
+            status:'CODI'
         }
-        setmember(member)
+        setmember({...member})
+    }
+
+    const onChangeLeader = (onChangeValue, leaderName, coidName) =>{
+        let items = _.filter(leader,(t)=> t.leader !== leaderName )
+        const addLeader = {
+            leader:leaderName,
+            coid:coidName,
+            gbs_member: onChangeValue
+        }
+        setLeader(_.concat(items,addLeader))
     }
 
     const onChangeGansaSelect = (value,key) =>{
@@ -161,7 +180,6 @@ function GBS_EditorMdoal({
                     <Button 
                         className={'saveButton'}
                         type="primary"
-                        onClick={() =>onClickEditor(true)}
                     >
                         날짜 변경
                     </Button>
@@ -196,17 +214,44 @@ function GBS_EditorMdoal({
     }
 
     const rendermember = (data) =>{
-        const { key } = data
+        const { key, in_member } = data
         return(
-            <Form.Item>
-                <Descriptions bordered>
-                    <Descriptions.Item label="리더">
-                        <Select
-                            mode={'multiple'}
+            <Descriptions.Item label="리더" span={2}>
+                <Select
+                    mode={'multiple'}
+                    showSearch
+                    size="middle"
+                    style={{ width:'100%' }}
+                    value ={in_member}
+                    onChange={(v) => onChangeMemberSelect(v,key)}
+                >
+                    <Option value="이리더1">이리더1</Option>
+                    <Option value="이리더2">이리더2</Option>
+                    <Option value="이리더3">이리더3</Option>
+                    <Option value="이리더4">이리더4</Option>
+                </Select>
+            </Descriptions.Item>
+        )
+    }
+
+    const  rendergbsmember = (data) =>{
+        if (!_.isEmpty(member)) {
+            const { key, name } = data
+            const { in_member } = member[key]
+            if (_.isEmpty(in_member)) return
+            return _.map( in_member,( value,index )=>{
+                return(
+                    <Descriptions.Item 
+                        label={value}
+                        key={`${index}`}
+                        span={2}
+                    >
+                        <Select 
                             showSearch
+                            mode={'multiple'}
                             size="middle"
                             style={{ width:'100%' }}
-                            onChange={(v) => onChangeMemberSelect(v,key)}
+                            onChange={(onChangeValue) => onChangeLeader(onChangeValue,value,name)}
                         >
                             <Option value="이종민1">이종민1</Option>
                             <Option value="이종민2">이종민2</Option>
@@ -214,21 +259,26 @@ function GBS_EditorMdoal({
                             <Option value="이종민4">이종민4</Option>
                         </Select>
                     </Descriptions.Item>
-                </Descriptions>
-            </Form.Item>
-        )
+                )
+            })
+        }
     }
 
     const renderCodi = () =>{
         return(_.map(member, (data,index) =>{
+            const { name } = data
             return (
                 <Form.Item key={`${index}`}>
-                    <Descriptions bordered>
-                        <Descriptions.Item label="코디">
+                    <Descriptions 
+                        bordered
+                        className={'coid_descriptions'}
+                    >
+                        <Descriptions.Item label="코디" span={2}>
                             <Select 
                                 showSearch
                                 size="middle"
                                 style={{ width:'100%' }}
+                                value={name}
                                 onChange={(value) => onChangeCodiSelect(value,data)}
                             >
                                 <Option value="이종민1">이종민1</Option>
@@ -236,12 +286,11 @@ function GBS_EditorMdoal({
                                 <Option value="이종민3">이종민3</Option>
                                 <Option value="이종민4">이종민4</Option>
                             </Select>
-                            {rendermember(data)}
-                            <Button
-                                type={'dashed'}
-                                onClick={onPressDelete(data)}
-                            />      
                         </Descriptions.Item>
+                        {rendermember(data)}
+                    </Descriptions>
+                    <Descriptions bordered>
+                        {rendergbsmember(data)}
                     </Descriptions>
                 </Form.Item>
             )
@@ -249,9 +298,7 @@ function GBS_EditorMdoal({
     }
 
     useEffect(() => {
-        return () => {
-        }
-    }, [])
+    }, [error, data])
     
     return(
         <div className='search_wrapper'>
@@ -275,37 +322,42 @@ function GBS_EditorMdoal({
                 {openGBSTable &&
                     <div>
                         <Table 
-                            title={() =>renderTableTitle()}
+                            title={() => renderTableTitle()}
                             columns={columns}
-                            dataSource={data}
+                            dataSource={dumpData}
                         />
                         <Descriptions bordered>
-                            <Descriptions.Item label="교육/훈련 간사">
+                            <Descriptions.Item label="교육/훈련 간사" span={2}>
                                 {renderSelectGansa(STATUS.EDU_GANSA)}
                             </Descriptions.Item>
-                            <Descriptions.Item label="라인업/새가족간사 간사2">
+                            <Descriptions.Item label="라인업/새가족간사 간사" span={2}>
                                 {renderSelectGansa(STATUS.NEWFAMILY_GANSA)}
                             </Descriptions.Item>
-                            <Descriptions.Item label="예배/선교간사 간사3">
+                            <Descriptions.Item label="예배/선교간사 간사" span={2}>
                                 {renderSelectGansa(STATUS.WORSHIP_GANSA)}
                             </Descriptions.Item>
-                            <Descriptions.Item label="양육/재정간사 간사4">
+                            <Descriptions.Item label="양육/재정간사 간사" span={2}>
                                 {renderSelectGansa(STATUS.NURTURE_GANSA)}
                             </Descriptions.Item>
-                            <Descriptions.Item label="행정 간사6">
+                            <Descriptions.Item label="행정 간사" span={2}>
                                 {renderSelectGansa(STATUS.ADMIN_GANSA)}
                             </Descriptions.Item>
+                            <Descriptions.Item label=""/>
                         </Descriptions>
                         <Form onFinish={onFinish}>
-                            {renderCodi()}
-                            <Form.Item>
-                                <Button type="primary" htmlType="submit" onClick={onPressSaveButton}>
-                                    추가
-                                </Button>
-                                <Button type="primary" htmlType="submit" onClick={checkValue}>
+                            <div className={'codi_div'}>
+                                {renderCodi()}
+                            </div>
+                            <Form.Item className={'add_button'}>
+                                <Button  type="primary" htmlType="submit" onClick={onPressSaveButton}>
                                     추가
                                 </Button>
                             </Form.Item>
+                            {/* <Form.Item className={'add_button'}>
+                                <Button  type="primary" htmlType="submit" onClick={checkValue}>
+                                    확인
+                                </Button>
+                            </Form.Item> */}
                         </Form>
                     </div>}
                 <GBS_EditorModal
