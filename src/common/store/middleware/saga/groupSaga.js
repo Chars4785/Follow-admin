@@ -29,9 +29,25 @@ function* saveSeason({ payload }){
     }
 }
 
+function* getSeasonList(){
+    try{
+        const data = yield call(request,{
+            url: `${NetworkConfig.AUTH_URL}/season/list`,
+            method: 'GET',
+        })
+        yield put({
+            type:groupAction.successFetch,
+            data
+        })
+    }catch(e){
+        yield put(catchError(e))
+    }
+}
+
 
 function* groupSaga(){
   yield takeEvery(groupAction.saveSeasonAction, saveSeason)
+  yield takeEvery(groupAction.getSeasonListAction, getSeasonList)
 }
 
 export default groupSaga;

@@ -32,7 +32,8 @@ const groupStore = createSlice({
 // reducer action && saga action
 export const groupAction = {
   ...groupStore.actions,
-  saveSeasonAction: makeCreateAction('saveSeasonAction')
+  saveSeasonAction: makeCreateAction('saveSeasonAction'),
+  getSeasonListAction: makeCreateAction('getSeasonListAction')
 }
 
 export default groupStore;
