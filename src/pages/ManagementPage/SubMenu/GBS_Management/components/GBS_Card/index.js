@@ -11,63 +11,6 @@ import { useDispatch, useSelector } from 'react-redux';
 const { Group } = Input;
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
-const columns = [
-    {
-      title: '이름',
-      dataIndex: 'name',
-    },
-    {
-      title: '나이',
-      dataIndex: 'chinese',
-      sorter: {
-        compare: (a, b) => a.chinese - b.chinese,
-        multiple: 3,
-      },
-    },
-    {
-      title: '학년',
-      dataIndex: 'math',
-      sorter: {
-        compare: (a, b) => a.math - b.math,
-        multiple: 2,
-      },
-    },
-    {
-      title: '전리더',
-      dataIndex: 'english',
-    },
-  ];
-
-  const dumpData = [
-    {
-      key: '1',
-      name: 'John Brown',
-      chinese: 98,
-      math: 60,
-      english: 70,
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      chinese: 98,
-      math: 66,
-      english: 89,
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      chinese: 98,
-      math: 90,
-      english: 70,
-    },
-    {
-      key: '4',
-      name: 'Jim Red',
-      chinese: 88,
-      math: 99,
-      english: 89,
-    },
-  ];
 
 function GBS_EditorMdoal({
 }){
@@ -89,20 +32,18 @@ function GBS_EditorMdoal({
         }))
     }
 
+    const getSeasonMeamber = () =>{
+        // dispatch(groupAction.getSeasonListAction({
+        //     group
+        // }))
+    }
+
     const onClickOpenGBSTable = useCallback(() =>{
         setOpenGBSTable(!openGBSTable)
     },[openGBSTable])
 
     const onFinish = (value) =>{
 
-    }
-
-    const renderTableTitle = () =>{
-        return(
-            <h2 className="tableTitle">
-                조원 리스트
-            </h2>
-        )
     }
 
     const checkValue = ()  =>{
@@ -313,19 +254,14 @@ function GBS_EditorMdoal({
                         </div>
                     </Descriptions.Item>
                     <Descriptions.Item label="리더 출석율">
-                        90%
+                        -
                     </Descriptions.Item>
                     <Descriptions.Item label="조원 출석율">
-                        50%
+                        -
                     </Descriptions.Item>
                 </Descriptions>
                 {openGBSTable &&
                     <div>
-                        <Table 
-                            title={() => renderTableTitle()}
-                            columns={columns}
-                            dataSource={dumpData}
-                        />
                         <Descriptions bordered>
                             <Descriptions.Item label="교육/훈련 간사" span={2}>
                                 {renderSelectGansa(STATUS.EDU_GANSA)}

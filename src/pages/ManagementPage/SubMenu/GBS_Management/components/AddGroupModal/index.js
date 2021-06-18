@@ -3,18 +3,16 @@ import React,{ useState, useCallback } from 'react';
 import _ from 'lodash';
 import { Modal, Descriptions, DatePicker, Space, Form, Input } from 'antd'
 import './AddGroupModal.scss'
-
+import { useInput } from  '../../../../../../common/utils/useState';
 const { TextArea } = Input;
 
 function AddGroupModal({
     isVisible,
     onClose
 }){
-    const [isVisibleHistoryModal,setIsVisibleHistoryModal] = useState(false)
-    const [groupStartDate,setGroupStartDate] = useState();
-    const [groupEndDate,setGroupEndDate] = useState();
     const [startDate,setStartDate] = useState();
     const [endDate,setEndDate] = useState();
+    const [seasonName, setSeasonName] = useInput();
 
     const onOk = () =>{
         console.log('OK')
@@ -26,11 +24,11 @@ function AddGroupModal({
     }
 
     const onChangeStartDate = (date) =>{
-        setGroupStartDate(date);
+        setEndDate(date);
     }
 
     const onChangeEndDate = (date) =>{
-        setGroupEndDate(date)
+        setStartDate(date)
     }
 
     return(
@@ -41,6 +39,9 @@ function AddGroupModal({
                 onCancel={onCancel}
            >
                 <Form labelCol={ { span: 3 } } wrapperCol={ { span: 21 } }>
+                    <Form.Item label="이름">
+                        <Input placeholder={'텀 이름을 적어주세요.'} value={seasonName} onChange={ setSeasonName } />
+                    </Form.Item>
                     <Form.Item label="텀 시작일">
                         <DatePicker value={startDate} onChange={onChangeStartDate} />
                     </Form.Item>
