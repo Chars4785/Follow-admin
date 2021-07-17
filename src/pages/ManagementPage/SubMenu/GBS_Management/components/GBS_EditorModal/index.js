@@ -1,13 +1,13 @@
 import React,{ useState, useCallback } from 'react';
 import _ from 'lodash';
-import { Modal, DatePicker, Form, Select, Input, TreeSelect, Button, message} from 'antd'
-import './GBS_EditorMdoal.scss'
+import { Modal, Descriptions, Form, Select, Input, TreeSelect, Button, message} from 'antd'
+import './GBS_EditorModal.scss'
 import { useInput } from '../../../../../../common/utils/useState';
 const { Group } = Input;
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
 
-function GBS_EditorMdoal({
+function GBS_EditorModal({
     isVisible,
     onClickEditor
 }){
@@ -19,7 +19,8 @@ function GBS_EditorMdoal({
     const [gbs,setGBS] = useState();
     const [lbs,setLBS] = useState();
     const [ministry,setMinistry] = useState();
-    
+    const [leaderLists,setLeaderLists] = useState([]);
+
     const handleChange = () =>{
 
     }
@@ -75,6 +76,79 @@ function GBS_EditorMdoal({
     const onChangeStatus = (value) =>{
         setStatus(value)
     }
+
+    
+    const onPressAddLeader = () =>{
+        const addLeader = {
+            leaderName:'',
+            superManager:'CODI',
+            groupType:'GBS',
+            groupMember:[]
+        }
+        setLeaderLists(_.concat(leaderLists,addLeader))
+    }
+    const onChangeLeaderSelect = (leader,value) =>{
+        console.log(value)
+        const item = _.filter( leaderLists,(list)=> list.leaderName !== leader.leaderName )
+        const addLeader = {
+            leaderName:value ||'',
+            superManager:'CODI',
+            groupType:'GBS',
+            groupMember:leader.groupMember || []
+        }
+        setLeaderLists(_.concat(item,[addLeader]))
+    }
+
+    const onChangeMemberSelect = (leader,member) =>{
+        console.log(member)
+        const item = _.filter( leaderLists,(list)=> list.leaderName !== leader.leaderName )
+        const addLeader = {
+            leaderName:leader.name ||'',
+            superManager:'CODI',
+            groupType:'GBS',
+            groupMember:member || []
+        }
+        setLeaderLists(_.concat(item,[addLeader]))
+    }
+
+    const renderLeaderLists = () =>{
+        return _.map(leaderLists, (leader,index) => (
+            <>
+                <Descriptions.Item 
+                    label="리더"
+                    span={1}
+                    key={`${index}`}
+                >
+                    <Select 
+                        showSearch
+                        size="middle"
+                        style={{ width:'100%' }}
+                        onChange={(leaderValue) => onChangeLeaderSelect(leader,leaderValue)}
+                    >
+                        <Option value="이종민1">이종민1</Option>
+                        <Option value="이종민2">이종민2</Option>
+                        <Option value="이종민3">이종민3</Option>
+                        <Option value="이종민4">이종민4</Option>
+                    </Select>
+                </Descriptions.Item>
+                <Descriptions.Item label="조원" span={2}>
+                    <Select
+                        mode={'multiple'}
+                        showSearch
+                        size="middle"
+                        style={{ width:'100%' }}
+                        onChange={(memberValue) => onChangeMemberSelect(leader,memberValue)}
+                    >
+                        <Option value="이리더1">이리더1</Option>
+                        <Option value="이리더2">이리더2</Option>
+                        <Option value="이리더3">이리더3</Option>
+                        <Option value="이리더4">이리더4</Option>
+                    </Select>
+                </Descriptions.Item>
+            </>
+        ))
+    }
+
     return(
            <Modal
                 width={ 1000 }
@@ -85,56 +159,29 @@ function GBS_EditorMdoal({
                 onCancel={ onFinishFailed }
            >
                 <Form labelCol={ { span: 3 } } wrapperCol={ { span: 21 } }>
-                        <Form.Item label="역할">
-                            <Select defaultValue="sheep" onChange={onChangeStatus}>
-                                <Option value="sheep">조원</Option>
-                                <Option value="leader">리더</Option>
-                                <Option value="gansa">간사</Option>
-                                <Option value="shepherd">교역자</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="이름">
-                            <Input placeholder={'이름을 입력해주세요'} onChange={ setName } />
-                        </Form.Item>
-                        <Form.Item label="아이디">
-                            <Input placeholder={'아이디를 입력해 주세요'} onChange={ setUserId } />
-                        </Form.Item>
-                        <Form.Item label="전화번호">
-                            <Input placeholder={'- 없이 휴대폰 전화번호를 입력해주세요'} onChange={ setPhoneNumber } />
-                        </Form.Item>
-                        <Form.Item label="생일">
-                            <DatePicker onChange={onChangeDate} />
-                        </Form.Item>
-                        <Form.Item label="소속 GBS">
-                            <Select onChange={onChangeGBS} placeholder={'소속 GBS, 코디 간사는 교역자를 선택해주세요.'}>
-                                <Option value="shepherd">이종민</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="소속 LBS"> 
-                            <Select onChange={onChangeLBS} placeholder={'소속 LBS, 코디 간사는 교역자를 선택해주세요.'}>
-                                <Option value="shepherd">이종민</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="사역">
-                            <TreeSelect
-                                showSearch
-                                style={{ width: '100%' }}
-                                value={ministry}
-                                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                                placeholder={"소속되어있는 사역팀 전부 선택해주세요."}
-                                allowClear
-                                multiple
-                                treeDefaultExpandAll
-                                onChange={onChangeMinistry}
-                            >
-                                <TreeNode value="leaf1" title="my leaf" />
-                                <TreeNode value="leaf2" title="your leaf" />
-                                <TreeNode value="leaf23" title="your leaf" />
-                            </TreeSelect>
-                        </Form.Item>
-                    </Form>
+                    <Form.Item label="코디">
+                        <Select defaultValue="sheep" onChange={onChangeStatus}>
+                            <Option value="sheep">조원</Option>
+                            <Option value="leader">리더</Option>
+                            <Option value="gansa">간사</Option>
+                            <Option value="shepherd">교역자</Option>
+                        </Select>
+                    </Form.Item>
+                    <Descriptions bordered>
+                        {renderLeaderLists()}
+                    </Descriptions>
+                    <Form.Item className={'add_button'}>
+                        <Button 
+                            type="primary"
+                            htmlType="submit"
+                            onClick={onPressAddLeader}
+                        >
+                            추가
+                        </Button>
+                    </Form.Item>
+                </Form>
            </Modal>
     )
 }
 
-export default GBS_EditorMdoal;
+export default GBS_EditorModal;

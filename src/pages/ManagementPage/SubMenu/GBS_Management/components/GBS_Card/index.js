@@ -1,6 +1,6 @@
 import React,{ useState, useCallback, useEffect, useMemo } from 'react';
 import _ from 'lodash';
-import { Table, Descriptions, Form, Select, Input, TreeSelect, Button, message} from 'antd'
+import { Table, Descriptions, Form, Select, Input, TreeSelect, Button, Space, Modal} from 'antd'
 import GBS_EditorModal from '../GBS_EditorModal';
 import './GBS_Card.scss';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
@@ -11,6 +11,18 @@ import { useDispatch, useSelector } from 'react-redux';
 const { Group } = Input;
 const { Option } = Select;
 const { TreeNode } = TreeSelect;
+const dataSource = [
+    {
+      key: '1',
+      name: 'Mike',
+      leaderCount: 10
+    },
+    {
+      key: '2',
+      name: '강민수',
+      leaderCount: 11
+    },
+  ];
 
 function GBS_EditorMdoal({
 }){
@@ -26,16 +38,33 @@ function GBS_EditorMdoal({
     const dispatch = useDispatch()
     const { error, data } = useSelector( state => state.groupStore )
 
-    const onClickEditor = async(value) =>{
-        dispatch(groupAction.saveSeasonAction({
-            groupInfo:member
-        }))
-    }
+    const columns = useMemo(()=> [
+        {
+          title: '이름',
+          dataIndex: 'name',
+          align: 'center',
+          key: 'name',
+        },
+        {
+          title: '인원 수',
+          dataIndex: 'leaderCount',
+          align: 'center',
+          key: 'leaderCount',
+        },
+        {
+            title: '편집',
+            key: 'operation',
+            align: 'center',
+            render: () => (
+              <Space size="middle">
+                <Button onClick={onClickEditor}>편집</Button>
+              </Space>
+            )
+          },
+      ],[  ]);
 
-    const getSeasonMeamber = () =>{
-        // dispatch(groupAction.getSeasonListAction({
-        //     group
-        // }))
+    const onClickEditor = async(value) =>{
+        setGBSeditorModalVisible(!gbs_editorModalVisible);
     }
 
     const onClickOpenGBSTable = useCallback(() =>{
@@ -47,16 +76,16 @@ function GBS_EditorMdoal({
     }
 
     const checkValue = ()  =>{
-        console.log(member)
-        console.log(leader)
+
     }
 
     const onPressSaveButton = () =>{
         const addMember = {
             key: String(count),
-            name: '',
-            status: '',
-            in_member: []
+            leaderName: '',
+            groupType: '',
+            superManager:'',
+            groupMember: []
         }
         member[String(count)] = addMember
         setmember(member)
@@ -66,7 +95,7 @@ function GBS_EditorMdoal({
     const onChangeMemberSelect = (value,key,status) =>{
         member[key] ={
             ...member[key],
-            in_member: value
+            groupMember: value
         }
         setmember({...member})
     }
@@ -75,18 +104,21 @@ function GBS_EditorMdoal({
         const { key } = data
         member[key] = {
             ...member[key],
-            name: value,
-            status:'CODI'
+            leaderName: value,
+            superManager:'GANSA',
+            groupType:'LBS'
         }
         setmember({...member})
     }
 
     const onChangeLeader = (onChangeValue, leaderName, coidName) =>{
+        console.log(coidName)
         let items = _.filter(leader,(t)=> t.leader !== leaderName )
         const addLeader = {
-            leader:leaderName,
-            coid:coidName,
-            gbs_member: onChangeValue
+            leaderName,
+            superManager:'CODI',
+            groupType:'GBS',
+            groupMember: onChangeValue
         }
         setLeader(_.concat(items,addLeader))
     }
@@ -155,7 +187,7 @@ function GBS_EditorMdoal({
     }
 
     const rendermember = (data) =>{
-        const { key, in_member } = data
+        const { key, groupMember } = data
         return(
             <Descriptions.Item label="리더" span={2}>
                 <Select
@@ -163,7 +195,7 @@ function GBS_EditorMdoal({
                     showSearch
                     size="middle"
                     style={{ width:'100%' }}
-                    value ={in_member}
+                    value ={groupMember}
                     onChange={(v) => onChangeMemberSelect(v,key)}
                 >
                     <Option value="이리더1">이리더1</Option>
@@ -178,9 +210,9 @@ function GBS_EditorMdoal({
     const  rendergbsmember = (data) =>{
         if (!_.isEmpty(member)) {
             const { key, name } = data
-            const { in_member } = member[key]
-            if (_.isEmpty(in_member)) return
-            return _.map( in_member,( value,index )=>{
+            const { groupMember } = member[key]
+            if (_.isEmpty(groupMember)) return
+            return _.map( groupMember,( value,index )=>{
                 return(
                     <Descriptions.Item 
                         label={value}
@@ -280,21 +312,27 @@ function GBS_EditorMdoal({
                             </Descriptions.Item>
                             <Descriptions.Item label=""/>
                         </Descriptions>
-                        <Form onFinish={onFinish}>
-                            <div className={'codi_div'}>
-                                {renderCodi()}
-                            </div>
-                            <Form.Item className={'add_button'}>
-                                <Button  type="primary" htmlType="submit" onClick={onPressSaveButton}>
-                                    추가
-                                </Button>
-                            </Form.Item>
-                            {/* <Form.Item className={'add_button'}>
-                                <Button  type="primary" htmlType="submit" onClick={checkValue}>
-                                    확인
-                                </Button>
-                            </Form.Item> */}
-                        </Form>
+                        <Button 
+                            className={'saveButton'}    
+                            type="default"
+                            onClick={onClickOpenGBSTable}
+                        >
+                            추가
+                        </Button>
+                        <div>
+                            <Table 
+                                columns={columns} 
+                                dataSource={dataSource}
+                                // pagination={
+                                // {
+                                //     size: 'small',
+                                //     onChange: onChangePagination,
+                                //     total: count,
+                                //     current: page,
+                                //     pageSize: PAGE_LIMITE,
+                                // } }
+                            />
+                        </div>
                     </div>}
                 <GBS_EditorModal
                     isVisible={gbs_editorModalVisible}
